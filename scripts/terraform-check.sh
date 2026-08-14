@@ -1,8 +1,27 @@
 #!/bin/bash
 
-echo "Starting Terraform checks..."
+set -e
 
-terraform fmt -check
-terraform validate
+if [ -z "$1" ]; then
+    echo "ERROR: Project name is required."
+    exit 1
+fi
 
-echo "Terraform checks completed successfully."
+PROJECT_NAME=$1
+
+run_terraform_checks() {
+    terraform fmt -check
+
+    if terraform validate; then
+        echo "SUCCESS"
+    else
+        echo "FAILED"
+        exit 1
+    fi
+}
+
+echo "Checking project: $PROJECT_NAME"
+
+run_terraform_checks
+
+echo "$PROJECT_NAME CI Checks completed successfully."
